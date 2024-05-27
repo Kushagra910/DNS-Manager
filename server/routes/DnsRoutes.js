@@ -2,27 +2,27 @@ const express = require("express");
 const router = express.Router();
 
 const {createRecord,createBulkRecords,getRecords,updateRecord,deleteRecord} = require('../controllers/DNS');
-
+const {auth} = require("../middlewares/auth");
 
 //route to create a DNS record
 
-router.post("/createRecord",createRecord);
+router.post("/createRecord",auth,createRecord);
 
 // route to create Bulk DNS records 
 
-router.post("/bulk",createBulkRecords);
+router.post("/bulk",auth,createBulkRecords);
 
 // route to get a DNS record
 
-router.get("/",getRecords);
+router.get("/",auth,getRecords);
 
 // route to update a DNS record
 
-router.put("/:recordId",updateRecord);
+router.put("/:recordId",auth,updateRecord);
 
 // route to delete a DNS record
 
-router.delete("/:recordId",deleteRecord);
+router.delete("/:recordId",auth,deleteRecord);
 
 
 module.exports = router;
