@@ -18,11 +18,11 @@ router.get("/",auth,getRecords);
 
 // route to update a DNS record
 
-router.put("/:recordId",auth,updateRecord);
+router.put("update/:recordId",auth,updateRecord);
 
 // route to delete a DNS record
 
-router.delete("/:recordId",auth,deleteRecord);
+router.delete("delete/:recordId",auth,deleteRecord);
 
 
 module.exports = router;
