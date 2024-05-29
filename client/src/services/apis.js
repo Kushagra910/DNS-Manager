@@ -18,5 +18,6 @@ export const awsEndpoints = {
   DELETE_RECORD: BASE_URL + "/dashboard/delete",
   CREATE_BULK_RECORDS  : BASE_URL + "/dashboard/bulk",
   CREATE_RECORD : BASE_URL + "/dashboard/createRecord",
-  UPDATE_RECORD : BASE_URL + "/dashboard/update"
+  UPDATE_RECORD : BASE_URL + "/dashboard/update",
+  GET_ALL_HOSTEDZONES : BASE_URL + "/dashboard/getAll"
 }

@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initalState = {
   records : [],
+  hostedZones : null,
   loading : false,
   user: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null
 }
@@ -20,8 +21,11 @@ const recordSlice = createSlice({
     setUser(state, value) {
       state.user = value.payload;
     },
+    setHostedZones(state,value){
+      state.hostedZones = value.payload
+    }
   }
 })
 
-export const{ setRecords , setLoading,setUser} = recordSlice.actions;
+export const{ setRecords , setLoading,setUser,setHostedZones} = recordSlice.actions;
 export default recordSlice.reducer;
