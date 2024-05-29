@@ -5,11 +5,15 @@ const {
   ChangeResourceRecordSetsCommand,
   CreateHostedZoneCommand,
   ListHostedZonesByNameCommand,
+  ListHostedZonesCommand,
+  ListResourceRecordSetsCommand
 } = require("@aws-sdk/client-route-53");
 
-exports.client = new Route53Client({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+const client = new Route53Client({
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
   region: process.env.AWS_REGION,
 });
 
@@ -100,7 +104,7 @@ exports.updateRoute53Record = async (record) => {
   const { resourceRecords, recordName } = this.prepareRecord(record);
 
   const hostedZoneId = await this.getHostedZoneId(recordName, 1);
-
+  console.log("HOSTEDZONEId" , hostedZoneId);
   const params = {
     HostedZoneId: hostedZoneId,
     ChangeBatch: {
@@ -217,4 +221,41 @@ exports.createHostedZoneAndRecord = async (hostedZoneData, recordData) => {
   };
 
   return await this.createRoute53Record(recordParams);
+};
+
+// Function to get all hosted zones and their records
+exports.getHostedZonesAndRecords = async () => {
+  try {
+    // Get all hosted zones
+    const hostedZonesResponse = await client.send(new ListHostedZonesCommand({}));
+    const hostedZones = hostedZonesResponse.HostedZones;
+
+    const hostedZonesCount = hostedZones.length;
+
+    // Fetch all records for each hosted zone
+    const recordsPromises = hostedZones.map(async (zone) => {
+      const recordsResponse = await client.send(new ListResourceRecordSetsCommand({
+        HostedZoneId: zone.Id
+      }));
+      return {
+        hostedZone: zone,
+        records: recordsResponse.ResourceRecordSets
+      };
+    });
+
+    const hostedZonesWithRecords = await Promise.all(recordsPromises);
+
+    const totalRecordsCount = hostedZonesWithRecords.reduce((acc, zone) => {
+      return acc + zone.records.length;
+    }, 0);
+
+    return {
+      hostedZonesCount,
+      totalRecordsCount,
+      hostedZonesWithRecords
+    };
+  } catch (error) {
+    console.error("Error fetching hosted zones and records:", error);
+    throw error;
+  }
 };

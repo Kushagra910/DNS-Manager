@@ -4,6 +4,7 @@ const {
   updateRoute53Record,
   deleteRoute53Record,
   createRoute53BulkRecord,
+  getHostedZonesAndRecords
 } = require("../services/awsRoute53");
 
 exports.createRecord = async (req, res) => {
@@ -63,6 +64,7 @@ exports.updateRecord = async (req, res) => {
 
   try {
     const awsResponse = await updateRoute53Record(record);
+    console.log("awsResponse" , awsResponse);
 
     const updatedRecord = await DNS.findByIdAndUpdate(
       recordId,
@@ -75,11 +77,22 @@ exports.updateRecord = async (req, res) => {
       { new: true }
     );
 
+    console.log("updatedRecord",updatedRecord);
+
     res.status(200).json({ message: "Records updates successfully", data: updatedRecord, awsResponse });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.getAllHostedZones = async(req,res) => {
+    try {
+      const awsResponse = await getHostedZonesAndRecords();
+      res.status(200).json({ message: "HostedZones & Records fetched successfully", data: awsResponse });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
 
 
 exports.deleteRecord = async (req, res) => {
