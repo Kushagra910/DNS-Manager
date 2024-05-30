@@ -12,7 +12,7 @@ export const Navbar = () => {
   const {token} = useSelector(state => (state.auth));
 
   return (
-    <div className="flex items-center justify-between md:mx-20 pt-3 pb-2 ">
+    <div className="flex items-center justify-between md:mx-20 pt-3  ">
       {/* logo,title */}
       <Link to="/">
         <div className="flex gap-1  md:gap-2 items-center cursor-pointer">

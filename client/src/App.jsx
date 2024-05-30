@@ -29,7 +29,7 @@ function App() {
 
   return (
     <div className=" min-h-screen bg-richblack-700 flex flex-col font-inter overflow-y-auto">
-       <div className='w-full bg-richblack-300 mb-2'><Navbar/></div>
+       <div className='w-full bg-richblack-300 '><Navbar/></div>
       <Routes>
           <Route path="/" element={<Home/>}/>
           <Route path='/login' element={<Signin/>} />
