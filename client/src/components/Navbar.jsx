@@ -17,7 +17,7 @@ export const Navbar = () => {
       <Link to="/">
         <div className="flex gap-1  md:gap-2 items-center cursor-pointer">
           <img
-            src="public/499abb777da9463b875931e1bcd22196.png"
+            src="/499abb777da9463b875931e1bcd22196.png"
             className=" h-10 w-12 md:h-14 md:w-16"
           />
           <p className="cusrsor-pointer font-extrabold text-xl md:text-3xl  ">DNS-MANAGER</p>
