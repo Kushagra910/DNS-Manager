@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 export const HeroSection1 = () => {
   return (
@@ -12,8 +13,8 @@ export const HeroSection1 = () => {
           multiple domains.
         </p>
         <div className="flex flex-row gap-3">
-          <div className="cursor-pointer px-6 py-2 md:px-9 md:py-3 bg-richblack-25 text-richblack-900 rounded-lg">Get Started</div>
-          <div className="cursor-pointer px-6 py-2  md:px-9 md:py-3  border border-richblack-25 rounded-lg hover:bg-richblack-5 hover:text-richblack-700 transition-all duration-200">Learn More</div>
+          <Link to={'/signup'}><div className="cursor-pointer px-6 py-2 md:px-9 md:py-3 bg-richblack-25 text-richblack-900 rounded-lg">Get Started</div></Link>
+          <Link to={'/login'}><div className="cursor-pointer px-6 py-2  md:px-9 md:py-3  border border-richblack-25 rounded-lg hover:bg-richblack-5 hover:text-richblack-700 transition-all duration-200">Learn More</div></Link>
         </div>
       </div>
       {/* sub-section-2 */}

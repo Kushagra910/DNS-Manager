@@ -1,6 +1,6 @@
 import React from "react";
 import Template from "../components/core/Template";
-import signupImg from './Sign up-rafiki.svg';
+import signupImg from '/Sign up-rafiki.svg';
 
 export const Signup = () => {
   return (
