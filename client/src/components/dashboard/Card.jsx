@@ -48,13 +48,13 @@ const Card = ({ hostedZone, records }) => {
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto bg-richblack-500 rounded-xl font-inter shadow-md space-y-4 dark:bg-richblack-800 h-[400px] w-[500px] text-white">
+    <div className="p-6 max-w-4xl mx-auto bg-richblack-500 rounded-xl font-inter shadow-md space-y-4 dark:bg-richblack-800 w-[380px] md:h-[400px] md:w-[500px] text-white">
       <h1 className="text-2xl font-bold text-center text-white">Domains</h1>
       <div className="flex justify-between items-center">
         <p className="text-lg text-gray-300">Hosted Zone: {hostedZone.Name}</p>
         <p className="text-lg text-gray-300">Total Records: {records.length}</p>
       </div>
-      <div className="mt-4 w-full h-full">
+      <div className="md:mt-4 w-full h-full">
         <Bar data={chartData} options={options} />
       </div>
     </div>

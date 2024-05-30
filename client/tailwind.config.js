@@ -7,6 +7,7 @@ export default {
   ],
   theme: {
     fontFamily: {
+      comfortaa: ['Comfortaa', 'cursive'],
       inter: ["Inter", "sans-serif"],
       "edu-sa": ["Edu SA Beginner", "cursive"],
       mono: ["Roboto Mono", "monospace"],
@@ -134,6 +135,21 @@ export default {
       },
     },
     extend: {
+      animation: {
+        'slow-bounce': 'slow-bounce 3s infinite',
+      },
+      keyframes: {
+        'slow-bounce': {
+          '0%, 100%': {
+            transform: 'translateY(-5%)',
+            animationTimingFunction: 'cubic-bezier(0.8, 0, 1, 1)',
+          },
+          '50%': {
+            transform: 'translateY(0)',
+            animationTimingFunction: 'cubic-bezier(0, 0, 0.2, 1)',
+          },
+        },
+      },
       maxWidth: {
         maxContent: "1260px",
         maxContentTab: "650px"

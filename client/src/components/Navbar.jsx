@@ -12,15 +12,15 @@ export const Navbar = () => {
   const {token} = useSelector(state => (state.auth));
 
   return (
-    <div className="flex items-center justify-between md:mx-20 pt-3 pb-2  ">
+    <div className="flex items-center justify-between md:mx-20 pt-3 pb-2 ">
       {/* logo,title */}
       <Link to="/">
         <div className="flex gap-1  md:gap-2 items-center cursor-pointer">
           <img
-            src="LOGO"
+            src="public/499abb777da9463b875931e1bcd22196.png"
             className=" h-10 w-12 md:h-14 md:w-16"
           />
-          <p className="cusrsor-pointer font-extrabold text-xl md:text-3xl ">DNS-MANAGER</p>
+          <p className="cusrsor-pointer font-extrabold text-xl md:text-3xl  ">DNS-MANAGER</p>
         </div>
       </Link>
 

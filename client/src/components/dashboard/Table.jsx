@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useSelector ,useDispatch } from 'react-redux';
+import { deleteRecord, updateRecord } from '../../services/operations/recordsApi';
 
 const Table = ({ data }) => {
   const [selectedZone, setSelectedZone] = useState('');
   const [tableData, setTableData] = useState(data?.hostedZonesWithRecords?.[0]?.records || []);
+  const {token} = useSelector((state) => state.auth)
+  const {records} = useSelector((state) => (state.record));
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const zone = data.hostedZonesWithRecords?.find(zone => zone?.hostedZone?.Name === selectedZone);
-    if (!zone) {
-      console.log("ZONE DATA EMPTY FOR TABLE", zone);
-    }
+    // if (!zone) {
+    //   console.log("ZONE DATA EMPTY FOR TABLE", zone);
+    // }
     setTableData(zone?.records || []);
   }, [selectedZone, data.hostedZonesWithRecords]);
 
@@ -17,11 +23,39 @@ const Table = ({ data }) => {
     setSelectedZone(e.target.value);
   };
 
+  const deleteHandler = async (recordName) => {
+    // console.log("RECORD NAME", recordName);
+    const recordToDelete = records.find((record) => `${record.domain}.` === recordName);
+    
+    if (!recordToDelete) {
+      console.error("Record to delete not found");
+      return;
+    }
+  
+    const record = {
+      _id: recordToDelete._id,
+      domain: recordToDelete.domain,
+      type: recordToDelete.type,
+      value: recordToDelete.value,
+      ttl: recordToDelete.ttl,
+      ...(recordToDelete.type === 'MX' && { priority: recordToDelete.priority })
+    };
+  
+    console.log("RECORD TO DELETE", record);
+  
+    dispatch(deleteRecord(record, token));
+  };
+
+  const updateHandler = async (recordName) => {
+    const recordToUpdate = records.find((record) => `${record.domain}.` === recordName);
+      navigate(`/update/${recordToUpdate._id}`);
+  }
+
   return (
     <section className="px-6 py-8 mt-6">
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex flex-col md:flex-row items-center justify-between">
         <h1 className="text-2xl font-bold text-richblack-5">DNS Records</h1>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col md:flex-row items-center gap-4">
           {/* Select Dropdown */}
           <select
             className="border border-gray-300 font-inter  focus:outline-none px-4 py-2 bg-white dark:bg-gray-800 dark:text-gray-300 rounded-lg"
@@ -71,8 +105,8 @@ const Table = ({ data }) => {
                   <td className='py-2 px-4 text-gray-800 dark:text-gray-300'>{record.TTL}</td>
                   <td className='py-2 px-4'>
                     <div className="flex gap-2">
-                      <button className=" bg-yellow-5 text-richblack-900 font-semibold px-2 py-1 rounded hover:bg-yellow-50 transition-colors">Edit</button>
-                      <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-pink-500 transition-colors">Delete</button>
+                      {record.Type !== 'SOA' && record.Type !== 'NS' && (<button onClick={() => updateHandler(record.Name)} className=" bg-yellow-5 text-richblack-900 font-semibold px-2 py-1 rounded hover:bg-yellow-50 transition-colors" >Update</button>)}
+                      {((record.Type === 'SOA' || record.Type === 'NS') ? (<></>) : (<button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-pink-500 transition-colors" onClick={()=>(deleteHandler(record.Name))}>Delete</button>)) }
                     </div>
                   </td>
                 </tr>

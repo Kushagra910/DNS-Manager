@@ -12,12 +12,11 @@ export function getAllRecords (token) {
       const response = await apiConnector("GET",GET_ALL_RECORDS,null,{
         Authorization: `Bearer ${token}`,
       });
-      console.log("GET_ALL_RECORDS API RESPONSE............", response)
+      // console.log("GET_ALL_RECORDS API RESPONSE............", response)
       if (!response.data.data) {
         throw new Error(response.data.message)
       }
       dispatch(setRecords(response.data.data))
-      toast.success("Records Fetched Successfully")
     } catch(error){
       console.log("GET_ALL_RECORDS API ERROR............", error)
       toast.error("Fetch Records Failed")
@@ -27,32 +26,54 @@ export function getAllRecords (token) {
    }
 }
 
-export function deleteRecord(recordId,token){
-  return async(dispatch) => {
+export function deleteRecord(record, token) {
+  return async (dispatch) => {
     const toastId = toast.loading("Loading...");
     dispatch(setLoading(true));
-    try{
-      const response = await apiConnector("DELETE",DELETE_RECORD+`/${recordId}` , null , {
-        Authorization: `Bearer ${token}`,
-      })
-
-      console.log("DELETE_RECORD API RESPONSE............", response)
-      if (!response.data.data) {
-        throw new Error(response.data.message)
+    try {
+      // Adjust the payload based on record type
+      let recordData;
+      if (record.type === "MX") {
+        recordData = {
+          domain: record.domain,
+          type: record.type,
+          ttl: record.ttl,
+          priority: record.priority,
+          value: record.value
+        };
+      } else {
+        recordData = {
+          domain: record.domain,
+          type: record.type,
+          ttl: record.ttl,
+          value: record.value
+        };
       }
-      // need to do something think about it
-      toast.success("Record Deleted Successfully")
-    }catch(error){
-      console.log("DELETE_RECORD API ERROR............", error)
-      toast.error("Record deletion failed")
+
+      const response = await apiConnector("DELETE", DELETE_RECORD+`/${record._id}`, recordData, {
+        Authorization: `Bearer ${token}`,
+      });
+
+      // console.log("DELETE_RECORD API RESPONSE............", response);
+      if (!response.data.success) {
+        throw new Error(response.data.message);
+      }
+      dispatch(getAllHostedZones(token));
+      dispatch(getAllRecords(token));
+      toast.success("Record Deleted Successfully");
+    } catch (error) {
+      console.log("DELETE_RECORD API ERROR............", error);
+      toast.error("Record deletion failed");
     }
     dispatch(setLoading(false));
     toast.dismiss(toastId);
-  }
+  };
 }
 
 
-export function createRecord(hostedZoneData, record,token){
+
+
+export function createRecord(hostedZoneData, record,token,navigate){
   return async(dispatch) => {
     const toastId = toast.loading("Loading...");
     dispatch(setLoading(true));
@@ -61,12 +82,15 @@ export function createRecord(hostedZoneData, record,token){
         Authorization: `Bearer ${token}`,
       })
 
-      console.log("CREATE_RECORD API RESPONSE............", response)
+      // console.log("CREATE_RECORD API RESPONSE............", response)
       if (!response.data.data) {
         throw new Error(response.data.message)
       }
       // need to do something think about it
+      dispatch(getAllHostedZones(token));
+      dispatch(getAllRecords(token));
       toast.success("Records created successfully")
+      navigate('/dashboard');
     }catch(error){
       console.log("CREATE_RECORD API ERROR............", error)
       toast.error("Record creation failed")
@@ -77,7 +101,7 @@ export function createRecord(hostedZoneData, record,token){
 }
 
 
-export function createBulkRecord(records,token){
+export function createBulkRecord(records,token,navigate){
   return async(dispatch) => {
     const toastId = toast.loading("Loading...");
     dispatch(setLoading(true));
@@ -86,11 +110,14 @@ export function createBulkRecord(records,token){
         Authorization: `Bearer ${token}`,
       })
 
-      console.log("CREATE_BULK_RECORDS API RESPONSE............", response)
+      // console.log("CREATE_BULK_RECORDS API RESPONSE............", response)
       if (!response.data.data) {
         throw new Error(response.data.message)
       }
       // need to do something think about it
+      dispatch(getAllHostedZones(token));
+      dispatch(getAllRecords(token));
+      navigate('/dashboard');
       toast.success("BulkRecords created successfully")
     }catch(error){
       console.log("CREATE_BULK_RECORDS API ERROR............", error)
@@ -102,7 +129,7 @@ export function createBulkRecord(records,token){
 }
 
 
-export function updateRecord(record,recordId,token){
+export function updateRecord(record,recordId,token,navigate){
   return async(dispatch) => {
     const toastId = toast.loading("Loading...");
     dispatch(setLoading(true));
@@ -111,12 +138,15 @@ export function updateRecord(record,recordId,token){
         Authorization: `Bearer ${token}`,
       })
 
-      console.log("UPDATE_RECORD API RESPONSE............", response)
+      // console.log("UPDATE_RECORD API RESPONSE............", response)
       if (!response.data.data) {
         throw new Error(response.data.message)
       }
       // need to do something think about it
+      dispatch(getAllHostedZones(token));
+      dispatch(getAllRecords(token));
       toast.success("Records updated successfully")
+      navigate('/dashboard');
     }catch(error){
       console.log("UPDATE_RECORD API ERROR............", error)
       toast.error("Record updation failed")
@@ -134,7 +164,7 @@ export function getAllHostedZones (token) {
      const response = await apiConnector("GET",GET_ALL_HOSTEDZONES,null,{
        Authorization: `Bearer ${token}`,
      });
-     console.log("GET_ALL_HOSTEDZONES API RESPONSE............", response)
+    //  console.log("GET_ALL_HOSTEDZONES API RESPONSE............", response)
      if (!response.data.data) {
        throw new Error(response.data.message)
      }

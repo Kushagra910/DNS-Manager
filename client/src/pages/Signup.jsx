@@ -1,7 +1,6 @@
 import React from "react";
 import Template from "../components/core/Template";
-import signupImg from '../assets/Sign up-rafiki.svg'
-{/* <a href="https://storyset.com/user">User illustrations by Storyset</a> */}
+import signupImg from './Sign up-rafiki.svg';
 
 export const Signup = () => {
   return (

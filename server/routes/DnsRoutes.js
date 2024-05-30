@@ -26,7 +26,7 @@ router.post("/update/:recordId",auth,updateRecord);
 
 // route to delete a DNS record
 
-router.delete("delete/:recordId",auth,deleteRecord);
+router.delete("/delete/:recordId",auth,deleteRecord);
 
 
 module.exports = router;

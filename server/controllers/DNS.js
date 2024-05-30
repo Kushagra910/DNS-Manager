@@ -18,6 +18,8 @@ exports.createRecord = async (req, res) => {
       type: record.type,
       ttl: parseInt(record.ttl),
       value: record.value,
+      priority: record.priority,  // Handle MX record priority
+      // Add other fields if necessary
     });
     await newRecord.save();
 
@@ -32,21 +34,26 @@ exports.createBulkRecords = async (req, res) => {
 
   try {
     const awsResponse = await createRoute53BulkRecord(records);
+    console.log("AWS bulk Response", awsResponse);
 
-    const newRecords = await DNS.insertMany(
-      records.map((record) => ({
-        domain: record.domain,
-        type: record.type,
-        ttl: parseInt(record.ttl),
-        value: record.value,
-      }))
-    );
+      // Prepare the records for the database insertion
+        const newRecords = records.map((record) => ({
+          domain: record.domain,
+          type: record.type,
+          ttl: parseInt(record.ttl),
+          value: record.value,
+          priority: record.priority,  // Handle MX record priority
+          // Add other fields if necessary
+        }));
 
-    res.status(201).json({ message: "Bulk records creation successfull", data: newRecords, awsResponse });
+          // Insert the new records into the database
+        const insertedRecords = await DNS.insertMany(newRecords);
+    res.status(201).json({ message: "Bulk records creation successful", data: insertedRecords, awsResponse });
   } catch (error) {
     res.status(500).json({ message: "error", data: error.message });
   }
 };
+
 
 exports.getRecords = async (req, res) => {
   try {
@@ -64,7 +71,7 @@ exports.updateRecord = async (req, res) => {
 
   try {
     const awsResponse = await updateRoute53Record(record);
-    console.log("awsResponse" , awsResponse);
+    console.log("awsResponse", awsResponse);
 
     const updatedRecord = await DNS.findByIdAndUpdate(
       recordId,
@@ -73,13 +80,15 @@ exports.updateRecord = async (req, res) => {
         type: record.type,
         ttl: parseInt(record.ttl),
         value: record.value,
+        priority: record.priority,  // Handle MX record priority
+        // Add other fields if necessary
       },
       { new: true }
     );
 
-    console.log("updatedRecord",updatedRecord);
+    console.log("updatedRecord", updatedRecord);
 
-    res.status(200).json({ message: "Records updates successfully", data: updatedRecord, awsResponse });
+    res.status(200).json({ message: "Record updated successfully", data: updatedRecord, awsResponse });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -95,31 +104,32 @@ exports.getAllHostedZones = async(req,res) => {
   };
 
 
-exports.deleteRecord = async (req, res) => {
-  const { recordId } = req.params;
-
-  try {
-    const record = await DNS.findById(recordId);
-    console.log("RECORD details" , record);
-
-    if (!record) {
-      return res.status(404).json({ message: "Record not found" });
+  exports.deleteRecord = async (req, res) => {
+    const { recordId } = req.params;
+  
+    try {
+      const record = await DNS.findById(recordId);
+      console.log("RECORD details", record);
+  
+      if (!record) {
+        return res.status(404).json({ message: "Record not found" });
+      }
+  
+      // Delete from Route 53
+      const awsResponse = await deleteRoute53Record({
+        domain: record.domain,
+        type: record.type,
+        ttl: record.ttl,
+        value: record.value,
+        priority: record.priority,  // Handle MX record priority
+        // Add other fields if necessary
+      });
+  
+      // Delete from MongoDB
+      await DNS.findByIdAndDelete(recordId);
+      console.log("RECORD deleted");
+      return res.status(200).json({ success: true, message: "Record deleted successfully", awsResponse });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
     }
-
-    // Delete from Route 53
-    const awsResponse = await deleteRoute53Record({
-      domain: record.domain,
-      type: record.type,
-      ttl: record.ttl,
-      value: record.value
-    });
-
-    // Delete from MongoDB
-    await DNS.findByIdAndDelete(recordId);
-    console.log("RECORD deleted");
-
-    return res.status(200).json({ success: true , message: "Record deleted successfully", awsResponse });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+  };
